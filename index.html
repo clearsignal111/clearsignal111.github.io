@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Skills — Slash commands for solo builders</title>
+  <meta name="description" content="Slash commands for Claude Code that cover the full SaaS shipping loop. Drop them in, type /, ship faster.">
+  <meta property="og:title" content="Claude Code Skills">
+  <meta property="og:description" content="15 slash commands for the full SaaS shipping loop. Drop in, type /, ship faster.">
+  <meta property="og:url" content="https://clearsignal111.github.io">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #f0f6fc;
+      --muted: #8b949e;
+      --dim: #484f58;
+      --pink: #f778ba;
+      --blue: #79c0ff;
+      --green: #56d364;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(13,17,23,0.95);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--pink);
+      font-size: 0.95rem;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* HERO */
+    .hero {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--pink);
+      border: 1px solid var(--pink);
+      border-radius: 99px;
+      padding: 0.25rem 0.75rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.85;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+    h1 span { color: var(--pink); }
+    .hero-sub {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-block;
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      font-size: 0.925rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-primary { background: var(--pink); color: #0d1117; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--muted); }
+
+    /* TERMINAL DEMO */
+    .terminal-wrap {
+      max-width: 680px;
+      margin: 3rem auto 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    .term-bar {
+      background: #21262d;
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .term-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28c840; }
+    .term-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--dim);
+      margin-left: 0.5rem;
+    }
+    .term-body {
+      background: var(--surface);
+      padding: 1.25rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+    }
+    .t-prompt { color: var(--green); }
+    .t-cmd { color: var(--blue); }
+    .t-label { color: var(--pink); font-weight: 600; }
+    .t-warn { color: #f0883e; }
+    .t-muted { color: var(--muted); }
+    .t-gap { display: block; height: 0.5rem; }
+
+    /* COMMANDS GRID */
+    section { max-width: 900px; margin: 0 auto; padding: 4rem 2rem; }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--pink);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    .section-sub { color: var(--muted); margin-bottom: 2.5rem; max-width: 520px; }
+
+    .cmd-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .cmd-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem 1.25rem;
+      transition: border-color 0.15s;
+    }
+    .cmd-card:hover { border-color: var(--muted); }
+    .cmd-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      color: var(--blue);
+      margin-bottom: 0.4rem;
+    }
+    .cmd-desc { font-size: 0.825rem; color: var(--muted); line-height: 1.5; }
+
+    /* INSTALL */
+    .install-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+    .install-block .c { color: var(--dim); }
+    .install-block .cmd { color: var(--text); }
+
+    /* PRICING */
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 400px;
+    }
+    .price-tag {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--pink);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .price-sub { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; margin-bottom: 1.5rem; }
+    .price-features { list-style: none; margin-bottom: 1.75rem; }
+    .price-features li {
+      font-size: 0.875rem;
+      color: var(--muted);
+      padding: 0.35rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+    .price-features li::before { content: "✓"; color: var(--green); font-weight: 600; }
+    .free-note {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--dim);
+      text-align: center;
+    }
+    .free-note a { color: var(--blue); text-decoration: none; }
+    .free-note a:hover { text-decoration: underline; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--dim);
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 600px) {
+      nav { padding: 1rem; }
+      .hero { padding: 3rem 1rem 2.5rem; }
+      section { padding: 3rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">clearsignal</span>
+  <div class="nav-links">
+    <a href="#commands">Commands</a>
+    <a href="#install">Install</a>
+    <a href="#pricing">Pricing</a>
+    <a href="https://github.com/clearsignal111/claude-code-skills-preview" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <span class="hero-tag">Claude Code · Slash Commands</span>
+  <h1>Ship faster with<br><span>15 slash commands</span><br>for your whole stack.</h1>
+  <p class="hero-sub">Drop them into Claude Code. Type <code style="color:var(--blue);font-family:'JetBrains Mono',monospace">/</code>. Get structured output you can act on immediately — not prompts you have to re-phrase.</p>
+  <div class="hero-actions">
+    <a href="https://clearsignal5.gumroad.com/l/claude-code-skills" class="btn btn-primary">Get the toolkit — $14</a>
+    <a href="https://github.com/clearsignal111/claude-code-skills-preview" class="btn btn-secondary">Try 3 free on GitHub</a>
+  </div>
+
+  <div class="terminal-wrap">
+    <div class="term-bar">
+      <div class="term-dot dot-r"></div>
+      <div class="term-dot dot-y"></div>
+      <div class="term-dot dot-g"></div>
+      <span class="term-title">claude code — /pr-review</span>
+    </div>
+    <div class="term-body">
+      <span class="t-prompt">❯ </span><span class="t-cmd">/pr-review</span><br>
+      <span class="t-gap"></span>
+      <span class="t-label">MUST FIX</span><br>
+      <span class="t-warn">⚠</span> <span class="t-muted">auth/routes.ts:47 — /admin/users has no auth middleware.</span><br>
+      <span class="t-muted">&nbsp;&nbsp;Any unauthenticated request reaches this handler.</span><br>
+      <span class="t-gap"></span>
+      <span class="t-label">SHOULD FIX</span><br>
+      <span class="t-muted">→ user.service.ts:23 — password logged before hashing.</span><br>
+      <span class="t-gap"></span>
+      <span class="t-label">NITPICK</span><br>
+      <span class="t-muted">→ Rename <code>d</code> to <code>userData</code> in map callback.</span><br>
+      <span class="t-gap"></span>
+      <span class="t-muted">Recommendation: </span><span style="color:var(--pink)">HOLD — do not merge.</span>
+    </div>
+  </div>
+</div>
+
+<!-- COMMANDS -->
+<section id="commands">
+  <p class="section-label">What's included</p>
+  <h2>15 commands. Full shipping loop.</h2>
+  <p class="section-sub">Every stage from planning to post-ship. Each command reads your actual codebase and returns structured, actionable output.</p>
+
+  <div class="cmd-grid">
+    <div class="cmd-card"><div class="cmd-name">/spec</div><div class="cmd-desc">Feature spec from plain English — user stories, acceptance criteria, edge cases, files likely touched.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/scaffold</div><div class="cmd-desc">Describe a component. Get the exact files and starter code to create.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/test-write</div><div class="cmd-desc">Reads your code and writes the tests. Unit, integration, edge cases.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/pr-review</div><div class="cmd-desc">Reviews diff for bugs, security issues, missing tests. Returns MUST FIX / SHOULD FIX / NITPICK.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/commit-msg</div><div class="cmd-desc">Reads staged diff, outputs a conventional commit message. Ready to paste.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/changelog</div><div class="cmd-desc">Generates CHANGELOG entry from recent commits. Semver-ready.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/env-check</div><div class="cmd-desc">Audits .env files vs. code. Finds missing vars, unused vars, no secrets in .env.example.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/db-migrate</div><div class="cmd-desc">Reviews migration files for destructive ops, missing rollbacks, index implications.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/error-triage</div><div class="cmd-desc">Paste a stack trace. Returns root cause, explanation, and the fix.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/deploy-check</div><div class="cmd-desc">Pre-deployment checklist — rate limits, auth, env vars, migrations safe to run.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/api-stub</div><div class="cmd-desc">Describe an endpoint. Get route, handler, validation, and error handling scaffold.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/security-audit</div><div class="cmd-desc">Scans code for common vulnerabilities before they ship.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/docs-update</div><div class="cmd-desc">Reads recent changes and updates relevant documentation.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/refactor</div><div class="cmd-desc">Targeted refactor with rationale. Doesn't change behavior, cleans the code.</div></div>
+    <div class="cmd-card"><div class="cmd-name">/load-test</div><div class="cmd-desc">Generates a load testing script for a new endpoint before prod finds out.</div></div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section id="install">
+  <p class="section-label">Setup</p>
+  <h2>2 minutes to install.</h2>
+  <p class="section-sub">No accounts, no API keys, no config. Works with any stack. Drop the files, type <code style="font-family:'JetBrains Mono',monospace;color:var(--blue)">/</code> in Claude Code.</p>
+
+  <div class="install-block">
+    <span class="c"># For a single project:</span><br>
+    <span class="cmd">cp -r skills/ your-project/.claude/skills/</span><br><br>
+    <span class="c"># Or globally, for all projects:</span><br>
+    <span class="cmd">cp -r skills/ ~/.claude/skills/</span><br><br>
+    <span class="c"># Type / in Claude Code to see commands appear.</span>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <p class="section-label">Pricing</p>
+  <h2>One price. No subscription.</h2>
+  <p class="section-sub">Buy once. Use forever. No monthly fee on top of your Claude subscription.</p>
+
+  <div class="pricing-card">
+    <div class="price-tag">$14</div>
+    <p class="price-sub">Launch price — goes to $19</p>
+    <ul class="price-features">
+      <li>15 Claude Code slash commands</li>
+      <li>Works with any stack</li>
+      <li>No API keys or extra accounts</li>
+      <li>Instant download, use immediately</li>
+      <li>All future updates included</li>
+    </ul>
+    <a href="https://clearsignal5.gumroad.com/l/claude-code-skills" class="btn btn-primary" style="width:100%;text-align:center;display:block;">Get the toolkit →</a>
+    <p class="free-note">Try 3 commands free first →&nbsp;<a href="https://github.com/clearsignal111/claude-code-skills-preview" target="_blank">github.com/clearsignal111/claude-code-skills-preview</a></p>
+  </div>
+</section>
+
+<footer>
+  <p><a href="https://github.com/clearsignal111" target="_blank">GitHub</a> &nbsp;·&nbsp; <a href="https://clearsignal5.gumroad.com/l/claude-code-skills" target="_blank">Gumroad</a> &nbsp;·&nbsp; clearsignal111@gmail.com</p>
+  <p style="margin-top:0.5rem">Built for solo developers shipping with Claude Code.</p>
+</footer>
+
+</body>
+</html>
